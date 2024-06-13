@@ -37,9 +37,9 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware)
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# @app.get("/")
+# async def root():
+#     return {"message": "Hello World"}
 
 def generate(content):
     topics_df = pd.read_csv("topics.csv")
