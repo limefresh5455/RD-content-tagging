@@ -1,0 +1,230 @@
+Topic,Subtopic
+BI,Analytics
+BI,Big Data
+BI,Data Blending
+BI,Data Hygiene
+BI,Data Visualisation
+Cloud,AWS
+Cloud,Azure
+Cloud,Cloud Applications
+Cloud,Cloud Computing
+Cloud,Cloud Migration
+Cloud,Cloud Platforms
+Cloud,Cloud Security
+Cloud,Cloud Storage
+Cloud,Contact Centre
+Cloud,CRM
+Cloud,Digital Transformation
+Cloud,Enterprise Cloud
+Cloud,ERP
+Cloud,Hybrid Cloud
+Cloud,Internet of Things
+Cloud,SaaS
+Cloud,Unified Comms
+Cloud,VoIP
+Data Centre,Access Management
+Data Centre,Automated Data Integration
+Data Centre,Big Data
+Data Centre,Cloud Computing
+Data Centre,Data Blending
+Data Centre,Data Centers
+Data Centre,Data Hygiene
+Data Centre,Data Security
+Data Centre,Data Warehousing
+Data Centre,Database Development
+Data Centre,Databases
+Data Centre,Firewall
+Data Centre,General Data Protection Regulation
+Data Centre,Hyper-Converged Infrastructure
+Data Centre,Infrastructure Management
+Data Centre,Insider Threats
+Data Centre,Internet Exchanges
+Data Centre,iPaaS
+Data Centre,Master Data Management
+Data Centre,O365 Migration
+Data Centre,Performance Monitoring
+Data Centre,SDDC
+Data Centre,Server
+Data Centre,Server Migration
+Data Centre,Storage
+Data Centre,Testing
+Data Centre,Virtualization
+Data Centre,VPN
+Finance,Accounting Software
+Finance,Budgeting
+Finance,Compliance
+Finance,Document Management
+Finance,Employee Benefits
+Finance,ERP Software
+Finance,Financial Reporting
+Finance,Forecasting
+Finance,Insurance
+Finance,Invoicing
+Finance,Payroll & HR
+Finance,Risk Management
+Finance,Supply Chain Management
+Hardware,BYOD
+Hardware,Data Centers
+Hardware,Data Warehousing
+Hardware,Mobile Devices
+Hardware,Network Hardware
+Hardware,Printers
+Hardware,Server
+Hardware,Storage
+IT / Business Management,5G
+IT / Business Management,Applied Innovations
+IT / Business Management,Artificial Intelligence
+IT / Business Management,Audit
+IT / Business Management,Board Communications
+IT / Business Management,Clinical Data
+IT / Business Management,Communications Strategy
+IT / Business Management,Compliance
+IT / Business Management,Contract Management
+IT / Business Management,Customer Experience Management
+IT / Business Management,digital resilience
+IT / Business Management,Digital Strategy
+IT / Business Management,Digital Transformation
+IT / Business Management,Diversity & Inclusion
+IT / Business Management,Education
+IT / Business Management,Employee Development
+IT / Business Management,Employee Engagement
+IT / Business Management,EPM
+IT / Business Management,Field Workforce Management
+IT / Business Management,General Data Protection Regulation
+IT / Business Management,Green IT
+IT / Business Management,HR
+IT / Business Management,IoT
+IT / Business Management,IT Governance
+IT / Business Management,IT Productivity
+IT / Business Management,LIBOR
+IT / Business Management,Managed Service Provider
+IT / Business Management,O365 Management
+IT / Business Management,Office/Facilities Management
+IT / Business Management,Outsourcing Talent
+IT / Business Management,Payment Platforms
+IT / Business Management,Process Management
+IT / Business Management,Project Management
+IT / Business Management,Recruitment
+IT / Business Management,Regulation & Standards
+IT / Business Management,Remote Desktop Management
+IT / Business Management,Remote Workforce
+IT / Business Management,SD-WAN
+IT / Business Management,Social Media Scams
+IT / Business Management,Systems Management
+IT / Business Management,Video Conferencing
+IT / Business Management,WLAN
+Marketing & Sales,ABM
+Marketing & Sales,Analytics
+Marketing & Sales,B2B Marketing
+Marketing & Sales,Brand Management
+Marketing & Sales,Channel Marketing
+Marketing & Sales,Content Marketing
+Marketing & Sales,CRM
+Marketing & Sales,Customer Journey
+Marketing & Sales,Data Management Platform
+Marketing & Sales,Demand Generation
+Marketing & Sales,Digital Advertising
+Marketing & Sales,e-Commerce
+Marketing & Sales,Email Marketing
+Marketing & Sales,Growth Marketing
+Marketing & Sales,Leadership
+Marketing & Sales,Market Research
+Marketing & Sales,Marketing Automation
+Marketing & Sales,PPC
+Marketing & Sales,Programmatic
+Marketing & Sales,Revenue Management
+Marketing & Sales,Sales & Marketing Alignment
+Marketing & Sales,SEO
+Marketing & Sales,Social Media
+Marketing & Sales,User Experience
+Marketing & Sales,Video Marketing
+Printers,Document Management
+Printers,Managed Print Service
+Security,Advanced Persistent Threats
+Security,Anti-Spam
+Security,Anti-Virus
+Security,Application Security
+Security,Audit
+Security,Authentication & Access Systems
+Security,Autonomous Testing
+Security,Cloud Security
+Security,Code Signing
+Security,Compliance
+Security,Cyber
+Security,Cyber Resilience
+Security,Data Centre Security
+Security,Data Compliance
+Security,Data Loss Prevention
+Security,Data Recovery
+Security,Digital Security
+Security,Disaster Recovery
+Security,Email Security
+Security,Endpoint
+Security,Firewall
+Security,GPOS
+Security,Hacking
+Security,Hybrid Security
+Security,Incident Response
+Security,Incident Response
+Security,Internal Threats
+Security,IOT Security
+Security,IT Threats & Vulnerabilities
+Security,Malware
+Security,Managed Security
+Security,Managed Security
+Security,Mobile Security
+Security,Modern Management
+Security,Network Security
+Security,Operational Technology
+Security,Phishing
+Security,Policy Management
+Security,Ransomware
+Security,Risk Management
+Security,SD-WAN
+Security,Security Awareness Training
+Security,Security Efficiency
+Security,Security Monitoring
+Security,Security Operations
+Security,Server Security
+Security,Servers
+Security,SIEM
+Security,Targeted Attacks
+Security,Threat Analytics
+Security,Threat Detection
+Security,Threat Modeling
+Security,Threat Prevention
+Security,Web Application Security
+Security,Website Security
+Security,XDR
+Security,Zero Day
+Security,Zero Trust
+Software,Active Directory
+Software,Applications
+Software,Artificial Intelligence
+Software,CRM
+Software,Databases
+Software,Deployment
+Software,DevOps
+Software,Document Management
+Software,Enterprise Software
+Software,Infrastructure Management
+Software,Logging
+Software,Office 365
+Software,Operating Systems
+Software,SaaS
+Software,Software Testing Tools
+Software,System Development Tools
+Software,Version Control
+Software,WiFi
+Storage,Backups
+Storage,Capacity Planning
+Storage,Continuous Data Protection
+Storage,Data Migration
+Storage,Data Protection
+Storage,Data Recovery
+Storage,Data Replication
+Storage,Data Storage
+Storage,Data Synchronization
+Storage,Disk Backups
+Storage,DiskStored
+Storage,Virtualisation
