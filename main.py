@@ -172,9 +172,9 @@ def document_categorieser(pdf_file):
     except Exception as e:
         return {"error": str(e)}
 # __________________________________________Function to handle YouTube video link______________________________________________
-def youtube_video_to_text(video_url):
+def youtube_video_to_text(url):
     try:
-        yt = YouTube(video_url)
+        yt = YouTube(url)
         video_stream = yt.streams.filter(progressive=True, file_extension="mp4").order_by('resolution').desc().first()
         output_directory = "Temporary_Video"
         os.makedirs(output_directory, exist_ok=True)
@@ -183,7 +183,7 @@ def youtube_video_to_text(video_url):
         return video_to_text(file)
        
     except Exception as e:
-        return categories_url(video_url)
+        return categories_url(url)
 # _____________________________________________Function to process each URL  asynchronously_________________________________
 def process_url(url):
     url= urllib.parse.unquote_plus(url) 
