@@ -19,22 +19,22 @@ from typing import List
 import concurrent.futures
 import time
 import difflib
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.gzip import GZipMiddleware
 
 
 api_key = os.getenv('OPENAI_API_KEY')
 #api_key = os.environ.get('OPENAI_API_KEY')
 client = OpenAI()
 app = FastAPI(title="FastAPI APP Endpoints")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
-app.add_middleware(GZipMiddleware)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"]
+# )
+# app.add_middleware(GZipMiddleware)
 
 
 # @app.get("/")
