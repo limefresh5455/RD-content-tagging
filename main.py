@@ -183,7 +183,7 @@ def youtube_video_to_text(video_url):
         return video_to_text(file)
        
     except Exception as e:
-        return {"error": str(e)}
+        return categories_url(video_url)
 # _____________________________________________Function to process each URL  asynchronously_________________________________
 def process_url(url):
     url= urllib.parse.unquote_plus(url) 
