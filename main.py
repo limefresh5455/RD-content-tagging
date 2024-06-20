@@ -19,28 +19,14 @@ from typing import List
 import concurrent.futures
 import time
 import difflib
-# from fastapi.middleware.cors import CORSMiddleware
-# from fastapi.middleware.gzip import GZipMiddleware
 
+app = FastAPI(title="FastAPI App Endpoints")
 
 api_key = os.getenv('OPENAI_API_KEY')
-#api_key = os.environ.get('OPENAI_API_KEY')
+
 client = OpenAI()
-app = FastAPI(title="FastAPI APP Endpoints")
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"]
-# )
-# app.add_middleware(GZipMiddleware)
 
-
-# @app.get("/")
-# async def root():
-#     return {"message": "Hello World"}
-
+#______________________________________________generate_categories________________________________________________________________
 def generate(content):
     topics_df = pd.read_csv("topics.csv")
 
@@ -84,13 +70,13 @@ def generate_summary(content):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": """
-                                             You are an expert summarizer. Summarize the given content concisely and clearly, ensuring that the summary consists of complete sentences. Do not truncate in the middle of a sentence. .
+                                            You are an expert summarizer. Summarize the given content concisely and clearly.
                                             """
             },
             {"role": "user", "content": content}
         ],
-        max_tokens=50,
-        temperature=0.5 
+        max_tokens=250,
+        temperature=0.1
     )
     summary = str(response.choices[0].message.content)
     return summary
@@ -172,9 +158,9 @@ def document_categorieser(pdf_file):
     except Exception as e:
         return {"error": str(e)}
 # __________________________________________Function to handle YouTube video link______________________________________________
-def youtube_video_to_text(url):
+def youtube_video_to_text(video_url):
     try:
-        yt = YouTube(url)
+        yt = YouTube(video_url)
         video_stream = yt.streams.filter(progressive=True, file_extension="mp4").order_by('resolution').desc().first()
         output_directory = "Temporary_Video"
         os.makedirs(output_directory, exist_ok=True)
@@ -183,7 +169,7 @@ def youtube_video_to_text(url):
         return video_to_text(file)
        
     except Exception as e:
-        return categories_url(url)
+        return {"error": str(e)}
 # _____________________________________________Function to process each URL  asynchronously_________________________________
 def process_url(url):
     url= urllib.parse.unquote_plus(url) 
