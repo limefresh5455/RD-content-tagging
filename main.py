@@ -22,7 +22,7 @@ import difflib
 
 app = FastAPI(title="FastAPI App Endpoints")
 
-# api_key = os.getenv('OPENAI_API_KEY')
+api_key = os.getenv('OPENAI_API_KEY')
 
 client = OpenAI()
 
