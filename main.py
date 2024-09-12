@@ -60,10 +60,8 @@ def generate(content):
         closest_match = difflib.get_close_matches(categories, topic_subtopic_pairs, n=2, cutoff=0.6)#difflib.get_close_matches function uses a sequence similarity algorithm to find the closest matches
         if closest_match:
             return closest_match[0]
-        else:
-            return closest_match[1]
-    else:
-        return categories
+
+    return categories
 #_________________________generate Summary for pdf__________________________________________
 def generate_summary(content):
     response =client.chat.completions.create(
