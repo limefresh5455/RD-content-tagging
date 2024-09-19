@@ -19,10 +19,24 @@ from typing import List
 import concurrent.futures
 import time
 import difflib
+from fastapi import Security, Depends
+from fastapi.security.api_key import APIKeyHeader
 
+load_dotenv()
 app = FastAPI(title="FastAPI App Endpoints")
 
 api_key = os.getenv('OPENAI_API_KEY')
+API_KEYS = os.getenv('API_KEYS', '').split(',')
+
+# Define an API key header security scheme
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+# Dependency function to verify the API key
+async def verify_api_key(api_key: str = Depends(api_key_header)):
+    if api_key in API_KEYS:
+        return api_key
+    else:
+        raise HTTPException(status_code=403,  detail="Invalid or missing API key")
 
 client = OpenAI()
 
@@ -242,7 +256,7 @@ def process_url_with_retry(url):
     return {"error": f"Failed to process {url} after {MAX_RETRIES} retries"}
 # ____________________________________________Extract endpoint with multithreading for urls ______________________________________________
 @app.post('/extract_urls')
-async def extract_urls(urls: str = Query(None)):
+async def extract_urls(urls: str = Query(None), api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
     results = []
 
@@ -260,7 +274,7 @@ async def extract_urls(urls: str = Query(None)):
     return results
 #__________________________________________endpoint_for_file________________________________________________________
 @app.post('/extract_file')
-async def extract_file(files: List[UploadFile]=File(None)):
+async def extract_file(files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key) ):
     results = []
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
