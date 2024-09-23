@@ -52,11 +52,22 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: str = Query(Non
 
 #__________________________________________endpoint_for_file________________________________________________________
 @app.post('/extract_file')
-async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key), callback_url: str = Query(None)):
+async def extract_file(files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key)):
     
-    background_tasks.add_task(process_files, files, callback_url)
+    results = []
 
-    return {"status": "Processing", "callback_url": callback_url}
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {executor.submit(process_file_with_retry, file): file for file in files}
+        
+        for future in concurrent.futures.as_completed(futures):
+            file = futures[future]
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                results.append({"error": str(e)})
+
+    return results
 
 @app.post('/extract_file_callback')
 async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key), callback_url: str = Query(None)):
