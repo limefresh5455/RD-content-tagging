@@ -1,4 +1,5 @@
 import os
+import uuid
 from typing import List
 import concurrent.futures
 from fastapi import Depends
@@ -46,8 +47,9 @@ async def extract_urls(urls: str = Query(None), api_key: str = Depends(verify_ap
 
 @app.post('/extract_urls_callback')
 async def extract_urls(background_tasks : BackgroundTasks, urls: str = Query(None), api_key: str = Depends(verify_api_key), callback_url : str = Query(None)):
-    background_tasks.add_task(process_urls, urls, callback_url)
-    return {"status": "Processing", "callback_url": callback_url}
+    request_id = str(uuid.uuid4())
+    background_tasks.add_task(process_urls, request_id, urls, callback_url)
+    return {"request_id": request_id, "callback_url": callback_url}
 
 
 #__________________________________________endpoint_for_file________________________________________________________
@@ -71,7 +73,8 @@ async def extract_file(files: List[UploadFile]=File(None), api_key: str = Depend
 
 @app.post('/extract_file_callback')
 async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key), callback_url: str = Query(None)):
-    
-    background_tasks.add_task(process_files, files, callback_url)
+    request_id = str(uuid.uuid4())
+    data = {'request_id' : request_id}
+    background_tasks.add_task(process_files, request_id, files, callback_url)
 
-    return {"status": "Processing", "callback_url": callback_url}
+    return {"request_id": request_id, "callback_url": callback_url}

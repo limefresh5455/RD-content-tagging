@@ -3,10 +3,10 @@ import concurrent.futures
 from fastapi import UploadFile
 from utils import process_url_with_retry, process_file_with_retry
 
-def send_callback(results, callback_url):
-    requests.post(callback_url, json=results)
+def send_callback(data, callback_url):
+    requests.post(callback_url, json=data)
 
-def process_files(files : list[UploadFile], callback_url : str):
+def process_files(request_id : str, files : list[UploadFile], callback_url : str):
     print("background task running")
     results = []
 
@@ -21,10 +21,11 @@ def process_files(files : list[UploadFile], callback_url : str):
             except Exception as e:
                 results.append({"error": str(e)})
 
-    send_callback(results=results, callback_url=callback_url)
+    callback_data = {'reqeust_id' : request_id, 'data' : results}
+    send_callback(data = callback_data, callback_url=callback_url)
     print("background task completed")
 
-def process_urls(urls: list[str], callback_url : str):
+def process_urls(request_id : str, urls : list[str], callback_url : str):
     print("background task running")
     urls_list = urls.split(',')
     results = []
@@ -40,5 +41,6 @@ def process_urls(urls: list[str], callback_url : str):
             except Exception as e:
                 results.append({"error": str(e)})
 
-    send_callback(results=results, callback_url=callback_url)
+    callback_data = {'request_id' : request_id, 'data' : results}
+    send_callback(data=callback_data, callback_url=callback_url)
     print("background task completed")
