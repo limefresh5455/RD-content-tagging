@@ -1,61 +1,59 @@
 import os
 import time
 import PyPDF2
-import difflib
 import tempfile
 import requests
 import urllib.parse
-import pandas as pd
-from typing import List
-from openai import OpenAI
 from pytube import YouTube
 import moviepy.editor as mp
+from pydantic import HttpUrl
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from fastapi import HTTPException
 from urllib.parse import urlparse
+from prompt import generate, client
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-load_dotenv()
+MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
+# load_dotenv()
 
-client = OpenAI()
+# client = OpenAI()
 
-#______________________________________________generate_categories________________________________________________________________
-def generate(content):
-    topics_df = pd.read_csv("topics.csv")
+# #______________________________________________generate_categories________________________________________________________________
+# def generate(content):
+#     topics_df = pd.read_csv("topics.csv")
 
-    # Create a list of all possible topic-subtopic combinations
-    topic_subtopic_pairs = [f"Topic: {topic}, SubTopic: {subtopic}" for topic, subtopic in zip(topics_df['Topic'], topics_df['Subtopic'])]
-    topic_subtopic_pairs_str = "\n".join(topic_subtopic_pairs)
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": f"""
-                                            You are working as a classifier to categorize content using the provided list of topics and subtopics.
+#     # Create a list of all possible topic-subtopic combinations
+#     topic_subtopic_pairs = [f"Topic: {topic}, SubTopic: {subtopic}" for topic, subtopic in zip(topics_df['Topic'], topics_df['Subtopic'])]
+#     topic_subtopic_pairs_str = "\n".join(topic_subtopic_pairs)
+#     response = client.chat.completions.create(
+#         model="gpt-3.5-turbo",
+#         messages=[
+#             {"role": "system", "content": f"""
+#                                             You are working as a classifier to categorize content using the provided list of topics and subtopics.
 
-                                            Possible topics and subtopics:
+#                                             Possible topics and subtopics:
 
-                                            {topic_subtopic_pairs_str}
+#                                             {topic_subtopic_pairs_str}
 
-                                            **Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above. 
+#                                             **Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above. 
+                            
+#                                             - If there are multiple close matches, provide the closest topic and subtopic combination.
+#                                             - Your response should be formatted exactly as: "Topic: topic, SubTopic: subtopic"
+#                                             - Use only the topics and subtopics given in the provided list above. Do not introduce any new topics or subtopics.
+#                                             """
+#             },
+#             {"role": "user", "content": content}
+#         ],
+#         max_tokens=50,
+#         temperature=0.05
+#     )
+#     categories = str(response.choices[0].message.content)
+#     if categories not in topic_subtopic_pairs_str:
+#         closest_match = difflib.get_close_matches(categories, topic_subtopic_pairs, n=2, cutoff=0.6)#difflib.get_close_matches function uses a sequence similarity algorithm to find the closest matches
+#         if closest_match:
+#             return closest_match[0]
 
-                                            - If there are multiple close matches, provide the closest topic and subtopic combination.
-                                            - Your response should be formatted exactly as: "Topic: topic, SubTopic: subtopic"
-                                            - Use only the topics and subtopics given in the provided list above. Do not introduce any new topics or subtopics.
-                                            """
-            },
-            {"role": "user", "content": content}
-        ],
-        max_tokens=50,
-        temperature=0.05
-    )
-    categories = str(response.choices[0].message.content)
-    if categories not in topic_subtopic_pairs_str:
-        closest_match = difflib.get_close_matches(categories, topic_subtopic_pairs, n=2, cutoff=0.6)#difflib.get_close_matches function uses a sequence similarity algorithm to find the closest matches
-        if closest_match:
-            return closest_match[0]
-
-    return categories
+#     return categories
 #_________________________generate Summary for pdf__________________________________________
 def generate_summary(content):
     response =client.chat.completions.create(
@@ -191,7 +189,7 @@ def process_file(file):
         raise HTTPException(status_code=400, detail='Invalid input type')
 #______________________________max_retry_for_openai_rateLINIT_Error_for_file______________________________________________
 def process_file_with_retry(file):
-    MAX_RETRIES = 5
+    # MAX_RETRIES = 5
     retries = 0
     while retries < MAX_RETRIES:
         try:
@@ -218,7 +216,7 @@ def process_file_with_retry(file):
 #______________________________max_retry_for_openai_rateLINIT_Error_for_url______________________________________________
 
 def process_url_with_retry(url):
-    MAX_RETRIES = 5
+    # MAX_RETRIES = 5
     retries = 0
     while retries < MAX_RETRIES:
         try:
