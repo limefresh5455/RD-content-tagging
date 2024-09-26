@@ -4,7 +4,12 @@ from fastapi import UploadFile
 from utils import process_url_with_retry, process_file_with_retry
 
 def send_callback(data, callback_url):
-    requests.post(callback_url, json=data)
+    try:
+        res = requests.post(callback_url, json=data)
+        print("status code : ", res.status_code)
+        print("data" , res.json())
+    except Exception as e:
+        print(f"Exception occured: {e}")
 
 def process_files(request_id : str, files : list[UploadFile], callback_url : str):
     print("background task running")
