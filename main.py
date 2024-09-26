@@ -8,7 +8,7 @@ from tasks import process_files, process_urls
 from fastapi.security.api_key import APIKeyHeader
 from utils import process_url_with_retry, process_file_with_retry
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
-
+from typing import Annotated
 load_dotenv()
 
 app = FastAPI(title="FastAPI App Endpoints")
@@ -27,7 +27,7 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 
 
 @app.post('/extract_urls')
-async def extract_urls(urls: str = Query(None), api_key: str = Depends(verify_api_key)):
+async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
     results = []
 
@@ -46,7 +46,7 @@ async def extract_urls(urls: str = Query(None), api_key: str = Depends(verify_ap
 
 
 @app.post('/extract_urls_callback')
-async def extract_urls(background_tasks : BackgroundTasks, urls: str = Query(None), api_key: str = Depends(verify_api_key), callback_url : str = Query(None)):
+async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, Query()], callback_url : Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     request_id = str(uuid.uuid4())
     background_tasks.add_task(process_urls, request_id, urls, callback_url)
     return {"request_id": request_id, "callback_url": callback_url}
@@ -54,7 +54,7 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: str = Query(Non
 
 #__________________________________________endpoint_for_file________________________________________________________
 @app.post('/extract_file')
-async def extract_file(files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key)):
+async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):
     
     results = []
 
@@ -72,7 +72,7 @@ async def extract_file(files: List[UploadFile]=File(None), api_key: str = Depend
     return results
 
 @app.post('/extract_file_callback')
-async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(None), api_key: str = Depends(verify_api_key), callback_url: str = Query(None)):
+async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(), api_key: str = Depends(verify_api_key), callback_url: str = Query()):
     request_id = str(uuid.uuid4())
     data = {'request_id' : request_id}
     background_tasks.add_task(process_files, request_id, files, callback_url)
