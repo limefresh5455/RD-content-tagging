@@ -1,9 +1,6 @@
 import difflib
 import pandas as pd
 from openai import OpenAI
-# from dotenv import load_dotenv
-
-# load_dotenv()
 
 client = OpenAI()
 
@@ -43,3 +40,20 @@ def generate(content):
             return closest_match[0]
 
     return categories
+
+#_________________________generate Summary for pdf__________________________________________
+def generate_summary(content):
+    response =client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": """
+                                            You are an expert summarizer. Summarize the given content concisely and clearly.
+                                            """
+            },
+            {"role": "user", "content": content}
+        ],
+        max_tokens=250,
+        temperature=0.1
+    )
+    summary = str(response.choices[0].message.content)
+    return summary

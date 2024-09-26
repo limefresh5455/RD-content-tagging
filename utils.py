@@ -10,13 +10,10 @@ from pydantic import HttpUrl
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
 from urllib.parse import urlparse
-from prompt import generate, client
+from prompt import generate, generate_summary, client
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
-# load_dotenv()
-
-# client = OpenAI()
 
 # #______________________________________________generate_categories________________________________________________________________
 # def generate(content):
@@ -54,22 +51,22 @@ MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 #             return closest_match[0]
 
 #     return categories
-#_________________________generate Summary for pdf__________________________________________
-def generate_summary(content):
-    response =client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": """
-                                            You are an expert summarizer. Summarize the given content concisely and clearly.
-                                            """
-            },
-            {"role": "user", "content": content}
-        ],
-        max_tokens=250,
-        temperature=0.1
-    )
-    summary = str(response.choices[0].message.content)
-    return summary
+# #_________________________generate Summary for pdf__________________________________________
+# def generate_summary(content):
+#     response =client.chat.completions.create(
+#         model="gpt-3.5-turbo",
+#         messages=[
+#             {"role": "system", "content": """
+#                                             You are an expert summarizer. Summarize the given content concisely and clearly.
+#                                             """
+#             },
+#             {"role": "user", "content": content}
+#         ],
+#         max_tokens=250,
+#         temperature=0.1
+#     )
+#     summary = str(response.choices[0].message.content)
+#     return summary
 # _______________________Fetch HTML content from the URL and extract text___________________________________________
 def fetch_and_extract_text(url):
     try:
