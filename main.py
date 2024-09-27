@@ -3,12 +3,13 @@ import uuid
 from typing import List
 import concurrent.futures
 from fastapi import Depends
+from typing import Annotated
 from dotenv import load_dotenv
 from tasks import process_files, process_urls
 from fastapi.security.api_key import APIKeyHeader
 from utils import process_url_with_retry, process_file_with_retry
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
-from typing import Annotated
+
 load_dotenv()
 
 app = FastAPI(title="FastAPI App Endpoints")
