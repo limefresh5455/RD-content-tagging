@@ -32,17 +32,17 @@ async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(ver
     urls_list = urls.split(',')
     results = []
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_url_with_retry, url): url for url in urls_list}
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     futures = {executor.submit(process_url_with_retry, url): url for url in urls_list}
         
-        for future in concurrent.futures.as_completed(futures):
-            url = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                results.append({"error": str(e)})
-
+    #     for future in concurrent.futures.as_completed(futures):
+    #         url = futures[future]
+    #         try:
+    #             result = future.result()
+    #             results.append(result)
+    #         except Exception as e:
+    #             results.append({"error": str(e)})
+    results = [process_url_with_retry(url) for url in urls]
     return results
 
 

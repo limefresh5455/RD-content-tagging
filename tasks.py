@@ -1,51 +1,34 @@
 import requests
-import concurrent.futures
 from fastapi import UploadFile
 from utils import process_url_with_retry, process_file_with_retry
+from response_model import CallbackResponseModel
 
-def send_callback(data, callback_url):
+def send_callback(data : CallbackResponseModel, callback_url):
     try:
-        res = requests.post(callback_url, json=data)
+        res = requests.post(callback_url, json=data.model_dump(mode='json'))
         print("status code : ", res.status_code)
+        res.raise_for_status()
+        
         print("data" , res.json())
     except Exception as e:
         print(f"Exception occured: {e}")
 
 def process_files(request_id : str, files : list[UploadFile], callback_url : str):
     print("background task running")
-    results = []
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_file_with_retry, file): file for file in files}
-        
-        for future in concurrent.futures.as_completed(futures):
-            file = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                results.append({"error": str(e)})
+    results = [process_file_with_retry(file) for file in files]
 
-    callback_data = {'reqeust_id' : request_id, 'data' : results}
+    # callback_data = {'reqeust_id' : request_id, 'data' : results}
+    callback_data = CallbackResponseModel(request_id = request_id, data = results)
     send_callback(data = callback_data, callback_url=callback_url)
     print("background task completed")
 
-def process_urls(request_id : str, urls : list[str], callback_url : str):
+def process_urls(request_id : str, urls : str, callback_url : str):
     print("background task running")
     urls_list = urls.split(',')
-    results = []
+    
+    results = [process_url_with_retry(url) for url in urls_list]
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_url_with_retry, url): url for url in urls_list}
-        
-        for future in concurrent.futures.as_completed(futures):
-            url = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                results.append({"error": str(e)})
-
-    callback_data = {'request_id' : request_id, 'data' : results}
+    callback_data = CallbackResponseModel(request_id = request_id, data = results)
     send_callback(data=callback_data, callback_url=callback_url)
     print("background task completed")
