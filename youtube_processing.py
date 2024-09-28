@@ -11,6 +11,8 @@ def process_youtube_links(video_url : str):
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ydl_opts = {
+            'username' : os.getenv('USERNAME'),
+            'password' : os.getenv('PASSWORD'),
             'format': 'm4a/bestaudio/best',
             'outtmpl' : os.path.join(temp_dir, f'{FILENAME}.%(ext)s')
         }
