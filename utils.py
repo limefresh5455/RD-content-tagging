@@ -12,61 +12,10 @@ from fastapi import HTTPException
 from urllib.parse import urlparse
 from prompt import generate, generate_summary, client
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from youtube_processing import process_youtube_links
 
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 
-# #______________________________________________generate_categories________________________________________________________________
-# def generate(content):
-#     topics_df = pd.read_csv("topics.csv")
-
-#     # Create a list of all possible topic-subtopic combinations
-#     topic_subtopic_pairs = [f"Topic: {topic}, SubTopic: {subtopic}" for topic, subtopic in zip(topics_df['Topic'], topics_df['Subtopic'])]
-#     topic_subtopic_pairs_str = "\n".join(topic_subtopic_pairs)
-#     response = client.chat.completions.create(
-#         model="gpt-3.5-turbo",
-#         messages=[
-#             {"role": "system", "content": f"""
-#                                             You are working as a classifier to categorize content using the provided list of topics and subtopics.
-
-#                                             Possible topics and subtopics:
-
-#                                             {topic_subtopic_pairs_str}
-
-#                                             **Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above. 
-                            
-#                                             - If there are multiple close matches, provide the closest topic and subtopic combination.
-#                                             - Your response should be formatted exactly as: "Topic: topic, SubTopic: subtopic"
-#                                             - Use only the topics and subtopics given in the provided list above. Do not introduce any new topics or subtopics.
-#                                             """
-#             },
-#             {"role": "user", "content": content}
-#         ],
-#         max_tokens=50,
-#         temperature=0.05
-#     )
-#     categories = str(response.choices[0].message.content)
-#     if categories not in topic_subtopic_pairs_str:
-#         closest_match = difflib.get_close_matches(categories, topic_subtopic_pairs, n=2, cutoff=0.6)#difflib.get_close_matches function uses a sequence similarity algorithm to find the closest matches
-#         if closest_match:
-#             return closest_match[0]
-
-#     return categories
-# #_________________________generate Summary for pdf__________________________________________
-# def generate_summary(content):
-#     response =client.chat.completions.create(
-#         model="gpt-3.5-turbo",
-#         messages=[
-#             {"role": "system", "content": """
-#                                             You are an expert summarizer. Summarize the given content concisely and clearly.
-#                                             """
-#             },
-#             {"role": "user", "content": content}
-#         ],
-#         max_tokens=250,
-#         temperature=0.1
-#     )
-#     summary = str(response.choices[0].message.content)
-#     return summary
 # _______________________Fetch HTML content from the URL and extract text___________________________________________
 def fetch_and_extract_text(url):
     try:
@@ -165,7 +114,7 @@ def process_url(url):
         if (urlparse(url).scheme in ['http', 'https'])and urlparse(url).netloc != 'www.youtube.com' :
             return categories_url(url)
         elif (urlparse(url).scheme in ['http', 'https']) and urlparse(url).netloc == 'www.youtube.com':
-            return youtube_video_to_text(url)
+            return process_youtube_links(url)
         else:
             raise HTTPException(status_code=400, detail='Unsupported URL format')
         
