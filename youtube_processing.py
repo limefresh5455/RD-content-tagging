@@ -11,10 +11,11 @@ def process_youtube_links(video_url : str):
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ydl_opts = {
-            'username' : os.getenv('USERNAME'),
-            'password' : os.getenv('PASSWORD'),
+            'username' : "oauth2",
+            'password' : "",
             'format': 'm4a/bestaudio/best',
-            'outtmpl' : os.path.join(temp_dir, f'{FILENAME}.%(ext)s')
+            'outtmpl' : os.path.join(temp_dir, f'{FILENAME}.%(ext)s'),
+            'verbose' : True
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -42,6 +43,7 @@ def process_youtube_links(video_url : str):
                     model="whisper-1", 
                     file=audio_file,  
                 )
-
+        
         text_content = transcription.text
+        
         return generate(text_content)
