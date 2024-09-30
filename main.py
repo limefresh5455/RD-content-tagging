@@ -58,3 +58,7 @@ async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFil
     background_tasks.add_task(process_files, request_id, files, callback_url)
 
     return {"request_id": request_id, "callback_url": callback_url}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
