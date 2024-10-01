@@ -26,19 +26,7 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 # ____________________________________________Extract endpoint with multithreading for urls ______________________________________________
 
 
-@app.post('/extract_urls', response_model= list[URLCategoryModel], responses={        
-        200: {
-            "description": "URLs extracted",
-            "content": {
-                "application/json": {
-                    "example": [
-                        {"status": True, "message": "Categories extracted successfully", "url" : "https://wiki.termux.com/wiki/Hacking", "content" : "Topic: Security, SubTopic: Hacking"},
-                        {"status" : False, "message" : "Failed to fetch or extract text from the URL", "url" : "https://wiki.term", "content" : ""}
-                    ]
-                }
-            },
-        },
-    },
+@app.post('/extract_urls', response_model= list[URLCategoryModel]
     )
 async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
@@ -47,19 +35,7 @@ async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(ver
     return results
 
 
-@app.post('/extract_urls_callback', response_model= QuickCallbackResponseModel, responses={
-    200 : {
-        'description' : "URLs are being processed",
-        "content" : {
-            "application/json" : {
-                "example" : {
-                    "request_id": "e524ea8c-0e9c-460f-a756-83f045d3f43a",
-                    "callback_url": "http://callback_url/endpoint"
-                }                
-            }
-        }
-    }
-})
+@app.post('/extract_urls_callback', response_model= QuickCallbackResponseModel)
 async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, Query()], callback_url : Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     request_id = str(uuid.uuid4())
     background_tasks.add_task(process_urls, request_id, urls, callback_url)
@@ -67,19 +43,7 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, 
 
 
 #__________________________________________endpoint_for_file________________________________________________________
-@app.post('/extract_file', response_model= list[FileCategoryModel], responses={        
-        200: {
-            "description": "Files processed",
-            "content": {
-                "application/json": {
-                    "example": [
-                        {"status": True, "message": "Documents processed successfully", "filename" : "Filename.pdf", "content" : {"category_report" : "Topic: Cloud, SubTopic: Internet of Things" , "summary" : "The paper discusses the transition from Internet of Things (IoT) to Cloud Internet..."}},
-                        {"status" : False, "message" : "Error processing file", "filename" : "Filename.pdf", "content" : ""}
-                    ]
-                }
-            },
-        },
-    },)
+@app.post('/extract_file', response_model= list[FileCategoryModel])
 async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):    
 
     results = [process_file_with_retry(file) for file in files]
