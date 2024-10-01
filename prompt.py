@@ -41,7 +41,7 @@ def generate(content : str) -> str:
             return closest_match[0]
 
     topic_subtopic = get_topic_subtopic(categories)
-    return TopicSubtopic(**topic_subtopic)
+    return [TopicSubtopic(**topic_subtopic)]
 
 #_________________________generate Summary for pdf__________________________________________
 def generate_summary(content):
