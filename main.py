@@ -26,8 +26,7 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 # ____________________________________________Extract endpoint with multithreading for urls ______________________________________________
 
 
-@app.post('/extract_urls', response_model= list[URLCategoryModel]
-    )
+@app.post('/extract_urls', response_model= list[URLCategoryModel])
 async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
     
@@ -65,7 +64,6 @@ async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(
 })
 async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(), api_key: str = Depends(verify_api_key), callback_url: str = Query()):
     request_id = str(uuid.uuid4())
-    data = {'request_id' : request_id}
     background_tasks.add_task(process_files, request_id, files, callback_url)
 
     return {"request_id": request_id, "callback_url": callback_url}

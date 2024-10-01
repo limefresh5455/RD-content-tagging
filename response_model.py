@@ -6,13 +6,13 @@ class TopicSubtopic(BaseModel):
     subtopic : str 
 
 class FileResponseModel(BaseModel):
-    category_report : TopicSubtopic
+    category_report : list[TopicSubtopic]
     summary : str
 
 class BaseCategoryModel(BaseModel):
     status : bool
     message : str
-    content : TopicSubtopic | FileResponseModel | dict
+    content : list[TopicSubtopic] | FileResponseModel | dict
 
 class URLCategoryModel(BaseCategoryModel):
     url: str
