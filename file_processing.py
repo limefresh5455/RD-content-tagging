@@ -1,8 +1,12 @@
 import PyPDF2
+import requests
+from io import BytesIO
+from fastapi import UploadFile
 from prompt import generate, generate_summary
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from response_model import FileResponseModel, FileCategoryModel
-from fastapi import UploadFile
+from starlette.datastructures import UploadFile as StarletteUploadFile
+from response_model import FileResponseModel, FileCategoryModel, URLCategoryModel
+
 #____________________________________Function to handle PDF file categories______________________________________________
 
 def document_categorieser(pdf_file : UploadFile):
@@ -24,3 +28,20 @@ def document_categorieser(pdf_file : UploadFile):
         return FileCategoryModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=FileResponseModel(**{"category_report": category_report, "summary": all_summary}))
     except Exception as e:
         return FileCategoryModel(status= False, message=f" Error {e}", filename = pdf_file.filename, content = {})
+    
+def process_file_source_url(source_url : str) -> UploadFile:
+    """
+    Downloads the pdf file using the public URL from azure storage, return the file content as UploadFile
+    """
+    print("Downlaoding file")
+    try:
+        response = requests.get(source_url)
+        response.raise_for_status()
+        if response.status_code == 200:
+            print("File download successfully")
+            pdf_file = BytesIO(response.content)
+
+            upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
+            return document_categorieser(upload_file)
+    except Exception as e:
+        return URLCategoryModel(status= False, message=f" Error {e}", url = source_url, content = {})

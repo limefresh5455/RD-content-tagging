@@ -1,25 +1,36 @@
+import re
 import os
 import time
 import urllib.parse
 from fastapi import HTTPException, UploadFile
 from urllib.parse import urlparse
-from prompt import generate, generate_summary, client
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from youtube_processing import process_youtube_links
-
 from url_processing import categories_url
-from file_processing import document_categorieser
-from video_processing import youtube_video_to_text, video_to_text
+from file_processing import document_categorieser, process_file_source_url
+from video_processing import video_to_text
+
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
+
+def is_valid_pdf_url(url: str) -> bool:
+    # Regular expression to check if the URL ends with ".pdf"
+    pdf_pattern = r'.*\/.*\.pdf$'
+    
+    # Use re.match to validate the URL pattern
+    if re.match(pdf_pattern, url):
+        return True
+    return False
 
 # _____________________________________________Function to process each URL  asynchronously_________________________________
 def process_url(url):
-    url= urllib.parse.unquote_plus(url) 
+    url= urllib.parse.unquote_plus(url)
+    parsed_url =  urlparse(url)
     
     if url:
-        if (urlparse(url).scheme in ['http', 'https'])and urlparse(url).netloc != 'www.youtube.com' :
+        if is_valid_pdf_url(url):
+            return process_file_source_url(url)
+        if (parsed_url.scheme in ['http', 'https'])and parsed_url.netloc != 'www.youtube.com' :
             return categories_url(url)
-        elif (urlparse(url).scheme in ['http', 'https']) and urlparse(url).netloc == 'www.youtube.com':
+        elif (parsed_url.scheme in ['http', 'https']) and parsed_url.netloc == 'www.youtube.com':
             return process_youtube_links(url)
         else:
             raise HTTPException(status_code=400, detail='Unsupported URL format')
