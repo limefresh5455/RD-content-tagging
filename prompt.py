@@ -1,7 +1,8 @@
+import re
 import difflib
 import pandas as pd
 from openai import OpenAI
-
+from response_model import TopicSubtopic
 client = OpenAI()
 
 topics_df = pd.read_csv("topics.csv")
@@ -39,7 +40,8 @@ def generate(content : str) -> str:
         if closest_match:
             return closest_match[0]
 
-    return categories
+    topic_subtopic = get_topic_subtopic(categories)
+    return TopicSubtopic(**topic_subtopic)
 
 #_________________________generate Summary for pdf__________________________________________
 def generate_summary(content):
@@ -57,3 +59,12 @@ def generate_summary(content):
     )
     summary = str(response.choices[0].message.content)
     return summary
+
+def get_topic_subtopic(topic_subtopic_str : str):
+    match = re.search(r'Topic:\s*(.*?),\s*SubTopic:\s*(.*)', topic_subtopic_str)
+    if match:
+        result = {
+            "topic": match.group(1).strip('<>'),
+            "subtopic": match.group(2).strip('<>')
+        }
+    return result

@@ -1,13 +1,18 @@
 from pydantic import BaseModel, HttpUrl
 
+class TopicSubtopic(BaseModel):
+    rank : int = 1
+    topic : str 
+    subtopic : str 
+
 class FileResponseModel(BaseModel):
-    category_report : str
+    category_report : TopicSubtopic
     summary : str
 
 class BaseCategoryModel(BaseModel):
     status : bool
     message : str
-    content : str | FileResponseModel
+    content : TopicSubtopic | FileResponseModel | dict
 
 class URLCategoryModel(BaseCategoryModel):
     url: str

@@ -1,7 +1,7 @@
 import requests
 from prompt import generate
 from bs4 import BeautifulSoup
-from response_model import URLCategoryModel
+from response_model import URLCategoryModel, TopicSubtopic
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # _______________________Fetch HTML content from the URL and extract text___________________________________________
@@ -21,7 +21,7 @@ def fetch_and_extract_text(url):
 def categories_url(url):
     text_content = fetch_and_extract_text(url)
     if not text_content:
-        return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=url,content="")
+        return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=url,content={})
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=1000)
     chunks = text_splitter.create_documents([text_content])
     # print("chunks", chunks)

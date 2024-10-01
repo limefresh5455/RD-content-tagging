@@ -23,4 +23,4 @@ def document_categorieser(pdf_file : UploadFile):
         # return {"category_report": category_report, "summary": all_summary}
         return FileCategoryModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=FileResponseModel(**{"category_report": category_report, "summary": all_summary}))
     except Exception as e:
-        return FileCategoryModel(status= False, message=f" Error {e}", filename = pdf_file.filename, content = "")
+        return FileCategoryModel(status= False, message=f" Error {e}", filename = pdf_file.filename, content = {})
