@@ -2,12 +2,12 @@ import re
 import os
 import time
 import urllib.parse
-from fastapi import HTTPException, UploadFile
 from urllib.parse import urlparse
-from youtube_processing import process_youtube_links
-from url_processing import categories_url
-from file_processing import document_categorieser, process_file_source_url
 from video_processing import video_to_text
+from fastapi import HTTPException, UploadFile
+from youtube_processing import process_youtube_links
+from url_processing import categories_url, process_video_source_url
+from file_processing import document_categorieser, process_file_source_url
 
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 
@@ -20,6 +20,11 @@ def is_valid_pdf_url(url: str) -> bool:
         return True
     return False
 
+def is_video_source_url(url : str):
+    video_pattern = r'.*\.(mp4|avi|mkv|mov|wmv|flv|webm|mpeg|mpg|m4v)$'
+    if re.match(video_pattern, url, re.IGNORECASE):
+        return True
+    return False
 # _____________________________________________Function to process each URL  asynchronously_________________________________
 def process_url(url):
     url= urllib.parse.unquote_plus(url)
@@ -28,7 +33,9 @@ def process_url(url):
     if url:
         if is_valid_pdf_url(url):
             return process_file_source_url(url)
-        if (parsed_url.scheme in ['http', 'https'])and parsed_url.netloc != 'www.youtube.com' :
+        elif is_video_source_url(url):
+            return process_video_source_url(url)
+        elif (parsed_url.scheme in ['http', 'https'])and parsed_url.netloc != 'www.youtube.com' :
             return categories_url(url)
         elif (parsed_url.scheme in ['http', 'https']) and parsed_url.netloc == 'www.youtube.com':
             return process_youtube_links(url)
