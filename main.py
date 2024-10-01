@@ -1,7 +1,6 @@
 import os
 import uuid
 from typing import List
-import concurrent.futures
 from fastapi import Depends
 from typing import Annotated
 from dotenv import load_dotenv
@@ -30,19 +29,9 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 @app.post('/extract_urls')
 async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
-    results = []
+    
+    results = [process_url_with_retry(url) for url in urls_list]
 
-    # with concurrent.futures.ThreadPoolExecutor() as executor:
-    #     futures = {executor.submit(process_url_with_retry, url): url for url in urls_list}
-        
-    #     for future in concurrent.futures.as_completed(futures):
-    #         url = futures[future]
-    #         try:
-    #             result = future.result()
-    #             results.append(result)
-    #         except Exception as e:
-    #             results.append({"error": str(e)})
-    results = [process_url_with_retry(url) for url in urls]
     return results
 
 
@@ -55,20 +44,9 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, 
 
 #__________________________________________endpoint_for_file________________________________________________________
 @app.post('/extract_file')
-async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):
-    
-    results = []
+async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):    
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_file_with_retry, file): file for file in files}
-        
-        for future in concurrent.futures.as_completed(futures):
-            file = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                results.append({"error": str(e)})
+    results = [process_file_with_retry(file) for file in files]
 
     return results
 

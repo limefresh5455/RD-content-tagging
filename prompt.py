@@ -8,7 +8,7 @@ topics_df = pd.read_csv("topics.csv")
 topic_subtopic_pairs = [f"Topic: {topic}, SubTopic: {subtopic}" for topic, subtopic in zip(topics_df['Topic'], topics_df['Subtopic'])]
 topic_subtopic_pairs_str = "\n".join(topic_subtopic_pairs)
 
-def generate(content):
+def generate(content : str) -> str:
 
     # Create a list of all possible topic-subtopic combinations
     response = client.chat.completions.create(

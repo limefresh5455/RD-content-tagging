@@ -3,6 +3,10 @@ import time
 import urllib.parse
 from fastapi import HTTPException, UploadFile
 from urllib.parse import urlparse
+from prompt import generate, generate_summary, client
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from youtube_processing import process_youtube_links
+
 from url_processing import categories_url
 from file_processing import document_categorieser
 from video_processing import youtube_video_to_text, video_to_text
@@ -16,7 +20,7 @@ def process_url(url):
         if (urlparse(url).scheme in ['http', 'https'])and urlparse(url).netloc != 'www.youtube.com' :
             return categories_url(url)
         elif (urlparse(url).scheme in ['http', 'https']) and urlparse(url).netloc == 'www.youtube.com':
-            return youtube_video_to_text(url)
+            return process_youtube_links(url)
         else:
             raise HTTPException(status_code=400, detail='Unsupported URL format')
         

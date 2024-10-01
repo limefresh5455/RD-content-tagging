@@ -15,11 +15,10 @@ def send_callback(data : CallbackResponseModel, callback_url):
 
 def process_files(request_id : str, files : list[UploadFile], callback_url : str):
     print("background task running")
-
+    
     results = [process_file_with_retry(file) for file in files]
 
-    # callback_data = {'reqeust_id' : request_id, 'data' : results}
-    callback_data = CallbackResponseModel(request_id = request_id, data = results)
+    callback_data = {'reqeust_id' : request_id, 'data' : results}
     send_callback(data = callback_data, callback_url=callback_url)
     print("background task completed")
 
@@ -29,6 +28,6 @@ def process_urls(request_id : str, urls : str, callback_url : str):
     
     results = [process_url_with_retry(url) for url in urls_list]
 
-    callback_data = CallbackResponseModel(request_id = request_id, data = results)
+    callback_data = {'request_id' : request_id, 'data' : results}
     send_callback(data=callback_data, callback_url=callback_url)
     print("background task completed")
