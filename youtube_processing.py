@@ -24,7 +24,7 @@ def process_youtube_links(video_url : str):
         except Exception as e:
             error_message = f"Error downloading audio : {e}"
             print(error_message)
-            return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=video_url,content={})
+            return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=video_url,content=[])
         
         audio_file_path = os.path.join(temp_dir, f'{FILENAME}.m4a')
 

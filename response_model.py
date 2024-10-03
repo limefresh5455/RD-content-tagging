@@ -12,7 +12,7 @@ class FileResponseModel(BaseModel):
 class BaseCategoryModel(BaseModel):
     status : bool
     message : str
-    content : list[TopicSubtopic] | FileResponseModel | dict
+    content : list[TopicSubtopic] | FileResponseModel | list
 
 class URLCategoryModel(BaseCategoryModel):
     url: str

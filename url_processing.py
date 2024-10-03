@@ -25,7 +25,7 @@ def fetch_and_extract_text(url):
 def categories_url(url):
     text_content = fetch_and_extract_text(url)
     if not text_content:
-        return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=url,content={})
+        return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=url,content=[])
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=1000)
     chunks = text_splitter.create_documents([text_content])
     # print("chunks", chunks)
@@ -78,4 +78,4 @@ def process_video_source_url(url):
     
     except Exception as e:
         print("Excpetion occured : ", e)
-        return URLCategoryModel(status=False, message = f"Failed to fetch or extract text from the URL {e}", url= url,content={})
+        return URLCategoryModel(status=False, message = f"Failed to fetch or extract text from the URL {e}", url= url,content=[])

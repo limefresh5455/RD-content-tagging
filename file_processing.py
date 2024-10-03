@@ -27,7 +27,7 @@ def document_categorieser(pdf_file : UploadFile):
         # return {"category_report": category_report, "summary": all_summary}
         return FileCategoryModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=FileResponseModel(**{"category_report": category_report, "summary": all_summary}))
     except Exception as e:
-        return FileCategoryModel(status= False, message=f" Error {e}", filename = pdf_file.filename, content = {})
+        return FileCategoryModel(status= False, message=f" Error {e}", filename = pdf_file.filename, content = [])
     
 def process_file_source_url(source_url : str) -> UploadFile:
     """
@@ -44,4 +44,4 @@ def process_file_source_url(source_url : str) -> UploadFile:
             upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
             return document_categorieser(upload_file)
     except Exception as e:
-        return URLCategoryModel(status= False, message=f" Error {e}", url = source_url, content = {})
+        return URLCategoryModel(status= False, message=f" Error {e}", url = source_url, content = [])

@@ -84,7 +84,7 @@ def process_file_with_retry(file : UploadFile):
                 retries += 1
                 time.sleep(2 ** retries)
     # return {"error": f"Failed to process {file.filename} after {MAX_RETRIES} retries"}
-    return FileCategoryModel(status= False, message=f"Failed to process {file.filename} after {MAX_RETRIES} retries", filename = file.filename, content = {})
+    return FileCategoryModel(status= False, message=f"Failed to process {file.filename} after {MAX_RETRIES} retries", filename = file.filename, content = [])
 
 #______________________________max_retry_for_openai_rateLINIT_Error_for_url______________________________________________
 
@@ -105,4 +105,4 @@ def process_url_with_retry(url):
         except Exception as e:
             return {"error": str(e)}
     # return {"error": f"Failed to process {url} after {MAX_RETRIES} retries"}
-    return URLCategoryModel(status=False, message = f"Failed to process {url} after {MAX_RETRIES} retries", url= url,content={})
+    return URLCategoryModel(status=False, message = f"Failed to process {url} after {MAX_RETRIES} retries", url= url,content=[])
