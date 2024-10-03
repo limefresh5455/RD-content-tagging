@@ -3,7 +3,7 @@ import tempfile
 from pytube import YouTube
 import moviepy.editor as mp
 from prompt import generate, client
-from response_model import FileCategoryModel, URLCategoryModel
+from response_model import ResponseModel
 from fastapi import UploadFile
 # _________________________________Function to handle video to text conversion_________________________________________________
 
@@ -44,10 +44,10 @@ def video_to_text(file : UploadFile):
             # print(text_content)
             report=generate(text_content)
             # return report
-            return FileCategoryModel(status=True, message = "Categories extracted successfully", filename = file.filename, content=report)
+            return ResponseModel(status=True, message = "Categories extracted successfully", filename = file.filename, content=report)
     except Exception as e:
         # return {"error": str(e)}
-        return FileCategoryModel(status= False, message=f" Error {e}", filename = file.filename, content = "")
+        return ResponseModel(status= False, message=f" Error {e}", filename = file.filename, content = "")
     
 # __________________________________________Function to handle YouTube video link______________________________________________
 
@@ -63,4 +63,4 @@ def youtube_video_to_text(video_url : str):
        
     except Exception as e:
         # return {"error": str(e)}
-        return URLCategoryModel(status= False, message=f" Error {e}", url = video_url, content = "")
+        return ResponseModel(status= False, message=f" Error {e}", url = video_url, content = "")
