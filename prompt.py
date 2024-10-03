@@ -39,7 +39,7 @@ def generate(content : str) -> str:
         closest_match = difflib.get_close_matches(categories, topic_subtopic_pairs, n=2, cutoff=0.6)#difflib.get_close_matches function uses a sequence similarity algorithm to find the closest matches
         if closest_match:
             topic_subtopic = get_topic_subtopic(closest_match[0])
-            return topic_subtopic
+            return [TopicSubtopic(**topic_subtopic)]
 
     topic_subtopic = get_topic_subtopic(categories)
     return [TopicSubtopic(**topic_subtopic)]
