@@ -5,24 +5,26 @@ class TopicSubtopic(BaseModel):
     topic : str 
     subtopic : str 
 
-class FileResponseModel(BaseModel):
+class ContentModel(BaseModel):
     category_report : list[TopicSubtopic]
-    summary : str
+    summary : str | None = None
 
-class BaseCategoryModel(BaseModel):
+class ResponseModel(BaseModel):
     status : bool
     message : str
-    content : list[TopicSubtopic] | FileResponseModel | list
+    content : ContentModel | list =  []
+    url : str | None = None
+    filename : str | None = None
 
-class URLCategoryModel(BaseCategoryModel):
-    url: str
+# class URLCategoryModel(BaseCategoryModel):
+#     url: str
 
-class FileCategoryModel(BaseCategoryModel):
-    filename : str
+# class FileCategoryModel(BaseCategoryModel):
+#     filename : str
 
 class CallbackResponseModel(BaseModel):
     request_id : str
-    data : list[URLCategoryModel | FileCategoryModel]
+    data : list[ResponseModel]
 
 class QuickCallbackResponseModel(BaseModel):
     request_id : str

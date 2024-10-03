@@ -8,7 +8,7 @@ from tasks import process_files, process_urls
 from fastapi.security.api_key import APIKeyHeader
 from utils import process_url_with_retry, process_file_with_retry
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
-from response_model import QuickCallbackResponseModel, BaseCategoryModel, FileCategoryModel
+from response_model import QuickCallbackResponseModel, ResponseModel
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 # ____________________________________________Extract endpoint with multithreading for urls ______________________________________________
 
 
-@app.post('/extract_urls', response_model= list[BaseCategoryModel])
+@app.post('/extract_urls', response_model= list[ResponseModel])
 async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
     
@@ -55,7 +55,7 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, 
 
 
 #__________________________________________endpoint_for_file________________________________________________________
-@app.post('/extract_file', response_model= list[FileCategoryModel])
+@app.post('/extract_file', response_model= list[ResponseModel])
 async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):    
 
     results = [process_file_with_retry(file) for file in files]

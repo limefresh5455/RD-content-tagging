@@ -3,7 +3,7 @@ import yt_dlp
 import tempfile
 from prompt import client, generate
 from moviepy.editor import AudioFileClip
-from response_model import URLCategoryModel
+from response_model import ResponseModel, ContentModel
 
 FILENAME = "temp_audio"
 CLIPPED_AUDIO_FILENAME = "temp_audio_clipped"
@@ -24,7 +24,7 @@ def process_youtube_links(video_url : str):
         except Exception as e:
             error_message = f"Error downloading audio : {e}"
             print(error_message)
-            return URLCategoryModel(status=False, message = "Failed to fetch or extract text from the URL", url=video_url,content=[])
+            return ResponseModel(status=False, message = "Failed to fetch or extract text from the URL", url=video_url)
         
         audio_file_path = os.path.join(temp_dir, f'{FILENAME}.m4a')
 
@@ -47,4 +47,4 @@ def process_youtube_links(video_url : str):
         
         text_content = transcription.text
         categories = generate(text_content)
-        return URLCategoryModel(status=True, message = "Categories extracted successfully", url=video_url, content=categories)
+        return ResponseModel(status=True, message = "Categories extracted successfully", url=video_url, content= ContentModel(category_report= categories))
