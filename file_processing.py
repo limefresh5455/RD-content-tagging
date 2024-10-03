@@ -9,7 +9,7 @@ from response_model import ResponseModel, ContentModel
 
 #____________________________________Function to handle PDF file categories______________________________________________
 
-def document_categorieser(pdf_file : UploadFile):
+def document_categorieser(pdf_file : UploadFile, from_url : str = None):
     try:
         reader = PyPDF2.PdfReader(pdf_file.file)
         text = ""
@@ -25,8 +25,13 @@ def document_categorieser(pdf_file : UploadFile):
         final_summary = " ".join(summaries)
         all_summary=generate_summary(final_summary)
         # return {"category_report": category_report, "summary": all_summary}
+        if from_url:
+            return ResponseModel(status= True, message = "Documents processed successfully", url= from_url, content=ContentModel(**{"category_report": category_report, "summary": all_summary}))        
         return ResponseModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=ContentModel(**{"category_report": category_report, "summary": all_summary}))
+    
     except Exception as e:
+        if from_url:
+            return ResponseModel(status= False, message=f" Error {e}", url= from_url)
         return ResponseModel(status= False, message=f" Error {e}", filename = pdf_file.filename)
     
 def process_file_source_url(source_url : str) -> UploadFile:
@@ -42,6 +47,6 @@ def process_file_source_url(source_url : str) -> UploadFile:
             pdf_file = BytesIO(response.content)
 
             upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
-            return document_categorieser(upload_file)
+            return document_categorieser(upload_file, from_url= source_url)
     except Exception as e:
         return ResponseModel(status= False, message=f" Error {e}", url = source_url)
