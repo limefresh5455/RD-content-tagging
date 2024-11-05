@@ -47,7 +47,7 @@ async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(ver
             }
         }
     }
-})
+}, tags= ["Callback"])
 async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, Query()], callback_url : Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     request_id = str(uuid.uuid4())
     background_tasks.add_task(process_urls, request_id, urls, callback_url)
@@ -74,7 +74,7 @@ async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(
             }
         }
     }
-})
+}, tags= ["Callback"])
 async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFile]=File(), api_key: str = Depends(verify_api_key), callback_url: str = Query()):
     request_id = str(uuid.uuid4())
     background_tasks.add_task(process_files, request_id, files, callback_url)
