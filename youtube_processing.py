@@ -12,8 +12,8 @@ def process_youtube_links(video_url : str):
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ydl_opts = {
-            'username' : "oauth2",
-            'password' : "",
+            # 'username' : "oauth2",
+            # 'password' : "",
             'format': 'm4a/bestaudio/best',
             'outtmpl' : os.path.join(temp_dir, f'{FILENAME}.%(ext)s'),
             'verbose' : True
