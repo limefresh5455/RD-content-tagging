@@ -16,12 +16,6 @@ class ResponseModel(BaseModel):
     url : str | None = None
     filename : str | None = None
 
-# class URLCategoryModel(BaseCategoryModel):
-#     url: str
-
-# class FileCategoryModel(BaseCategoryModel):
-#     filename : str
-
 class CallbackResponseModel(BaseModel):
     request_id : str
     data : list[ResponseModel]

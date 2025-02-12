@@ -1,7 +1,7 @@
 import PyPDF2
 import requests
 from io import BytesIO
-from fastapi import UploadFile
+from fastapi import UploadFile,HTTPException
 from prompt import generate, generate_summary
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from starlette.datastructures import UploadFile as StarletteUploadFile
@@ -30,10 +30,13 @@ def document_categorieser(pdf_file : UploadFile, from_url : str = None):
         return ResponseModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=ContentModel(**{"category_report": category_report, "summary": all_summary}))
     
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         if from_url:
-            return ResponseModel(status= False, message=f" Error {e}", url= from_url)
-        return ResponseModel(status= False, message=f" Error {e}", filename = pdf_file.filename)
-    
+            raise HTTPException(status_code=500, detail=f"Error processing file from URL: {str(e)}")
+        # return ResponseModel(status= False, message=f" Error {e}", filename = pdf_file.filename)
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
 def process_file_source_url(source_url : str) -> UploadFile:
     """
     Downloads the pdf file using the public URL from azure storage, return the file content as UploadFile
@@ -49,4 +52,5 @@ def process_file_source_url(source_url : str) -> UploadFile:
             upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
             return document_categorieser(upload_file, from_url= source_url)
     except Exception as e:
-        return ResponseModel(status= False, message=f" Error {e}", url = source_url)
+        # return ResponseModel(status= False, message=f" Error {e}", url = source_url)
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")

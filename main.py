@@ -3,14 +3,11 @@ import uuid
 from typing import List
 from fastapi import Depends
 from typing import Annotated
-from dotenv import load_dotenv
 from tasks import process_files, process_urls
 from fastapi.security.api_key import APIKeyHeader
 from utils import process_url_with_retry, process_file_with_retry
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
 from response_model import QuickCallbackResponseModel, ResponseModel
-
-load_dotenv()
 
 app = FastAPI(title="FastAPI App Endpoints")
 
@@ -48,6 +45,7 @@ async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(ver
         }
     }
 }, tags= ["Callback"])
+
 async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, Query()], callback_url : Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     request_id = str(uuid.uuid4())
     background_tasks.add_task(process_urls, request_id, urls, callback_url)
