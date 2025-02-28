@@ -153,7 +153,7 @@ def process_file_with_retry(file):
         except Exception as e:
             if "rate_limit_exceeded" in str(e):
                 print(f"Rate limit exceeded for {file.filename}. Waiting for 5 seconds before retrying...")
-                time.sleep(10)
+                time.sleep(5)
             else:
                 print(f"Retry {retries+1}/{MAX_RETRIES} for {file.filename}: {e}")
                 retries += 1

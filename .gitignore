@@ -3,3 +3,10 @@ venv
 .env
 .github
 downgrade
+.vscode
+transcript.txt
+test_env
+text_contetent.txt
+.gitignore
+notes
+.idea
