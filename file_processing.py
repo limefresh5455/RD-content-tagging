@@ -1,11 +1,12 @@
 import PyPDF2
 import requests
 from io import BytesIO
+from openai import OpenAI, OpenAIError
 from fastapi import UploadFile,HTTPException
 from prompt import generate, generate_summary
+from response_model import ResponseModel, ContentModel
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from starlette.datastructures import UploadFile as StarletteUploadFile
-from response_model import ResponseModel, ContentModel
 
 #____________________________________Function to handle PDF file categories______________________________________________
 
@@ -28,6 +29,9 @@ def document_categorieser(pdf_file : UploadFile, from_url : str = None):
         if from_url:
             return ResponseModel(status= True, message = "Documents processed successfully", url= from_url, content=ContentModel(**{"category_report": category_report, "summary": all_summary}))        
         return ResponseModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=ContentModel(**{"category_report": category_report, "summary": all_summary}))
+    
+    except OpenAIError as e:        
+        raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
     
     except Exception as e:
         import traceback

@@ -1,7 +1,7 @@
 import requests
 from fastapi import UploadFile, HTTPException
 from response_model import CallbackResponseModel
-from utils import process_url_with_retry, process_file_with_retry
+from utils import process_file, process_url
 
 def send_callback(data: CallbackResponseModel, callback_url: str):
     try:
@@ -18,7 +18,7 @@ def process_files(request_id: str, files: list[UploadFile], callback_url: str):
         results = []
         for file in files:
             try:
-                result = process_file_with_retry(file)
+                result = process_file(file)
                 results.append(result)
             except Exception as e:
                 results.append({"file": file.filename, "error": str(e)})
@@ -38,7 +38,7 @@ def process_urls(request_id: str, urls: str, callback_url: str):
         results = []
         for url in urls_list:
             try:
-                result = process_url_with_retry(url)
+                result = process_url(url)
                 results.append(result)
             except Exception as e:
                 results.append({"url": url, "error": str(e)})

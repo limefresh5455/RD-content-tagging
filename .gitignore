@@ -10,3 +10,4 @@ text_contetent.txt
 .gitignore
 notes
 .idea
+*.ipynb
