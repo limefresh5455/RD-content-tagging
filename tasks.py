@@ -1,9 +1,9 @@
 import requests
 from fastapi import UploadFile, HTTPException
 from response_model import CallbackResponseModel
-from utils import process_url_with_retry, process_file_with_retry, process_file, process_url
+from utils import process_url_with_retry, process_file_with_retry
 
-def send_callback(data, callback_url):
+def send_callback(data: CallbackResponseModel, callback_url: str):
     try:
         res = requests.post(callback_url, json=data.model_dump(mode='json'))
         res.raise_for_status()
@@ -18,7 +18,7 @@ def process_files(request_id: str, files: list[UploadFile], callback_url: str):
         results = []
         for file in files:
             try:
-                result = process_file(file)
+                result = process_file_with_retry(file)
                 results.append(result)
             except Exception as e:
                 results.append({"file": file.filename, "error": str(e)})
@@ -28,16 +28,7 @@ def process_files(request_id: str, files: list[UploadFile], callback_url: str):
         send_callback(data=callback_data, callback_url=callback_url)
         print("Background task completed")
     except Exception as e:
-        print(f"Exception occured: {e}")
-
-def process_files(request_id : str, files : list[UploadFile], callback_url : str):
-    print("background task running")
-    
-    results = [process_file_with_retry(file) for file in files]
-
-    callback_data = {'reqeust_id' : request_id, 'data' : results}
-    send_callback(data = callback_data, callback_url=callback_url)
-    print("background task completed")
+        raise HTTPException(status_code=500, detail=f"Error processing files: {str(e)}")
 
 def process_urls(request_id: str, urls: str, callback_url: str):
     try:
@@ -47,7 +38,7 @@ def process_urls(request_id: str, urls: str, callback_url: str):
         results = []
         for url in urls_list:
             try:
-                result = process_url(url)
+                result = process_url_with_retry(url)
                 results.append(result)
             except Exception as e:
                 results.append({"url": url, "error": str(e)})
