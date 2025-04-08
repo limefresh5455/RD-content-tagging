@@ -3,12 +3,10 @@ import os
 import time
 import urllib.parse
 from urllib.parse import urlparse
-from video_processing import video_to_text
 from fastapi import HTTPException, UploadFile
 from youtube_processing import process_youtube_links
 from url_processing import categories_url, process_video_source_url
-from file_processing import document_categorieser, process_file_source_url
-from response_model import ResponseModel
+from file_processing import process_file_source_url, file_processor_gemini
 
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 
@@ -33,16 +31,15 @@ def process_url(url):
     
     if url:
         if is_valid_pdf_url(url):
-            return process_file_source_url(url)
+            return process_file_source_url(url, "application/pdf")
         elif is_video_source_url(url):
-            return process_video_source_url(url)
+            return process_file_source_url(url, "video/mp4")
         elif (parsed_url.scheme in ['http', 'https'])and parsed_url.netloc != 'www.youtube.com' :
             return categories_url(url)
         elif (parsed_url.scheme in ['http', 'https']) and parsed_url.netloc == 'www.youtube.com':
             return process_youtube_links(url)
         else:
             raise HTTPException(status_code=400, detail='Unsupported URL format')
-        
     else:
         raise HTTPException(status_code=400, detail='Please provide either a file or a URL.')
 
@@ -53,11 +50,14 @@ def process_file(file : UploadFile):
     extension = os.path.splitext(filename)[1].lower()
 
     if extension == '.pdf':
-        return document_categorieser(file)
+        # return document_categorieser(file)
+        return file_processor_gemini(file, "application/pdf")
     elif extension in ['.mp4', '.mov', '.avi', 'wav']:
-        return video_to_text(file)
+        # return video_to_text(file)
+        return file_processor_gemini(file, "video/mp4")
     else:
         raise HTTPException(status_code=400, detail='Invalid input type')
+
 #______________________________max_retry_for_openai_rateLINIT_Error_for_file______________________________________________
 def process_file_with_retry(file : UploadFile):
     # MAX_RETRIES = 5

@@ -61,6 +61,9 @@ def video_to_text(file: UploadFile):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unexpected error: {str(e)}")
 
+def video_extraction_gemini(file: UploadFile):
+    pass
+
 # Function to handle YouTube video link
 def youtube_video_to_text(video_url: str):
     try:

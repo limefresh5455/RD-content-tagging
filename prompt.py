@@ -1,9 +1,8 @@
 import re
 import difflib
 import pandas as pd
-from openai import OpenAI, OpenAIError
+from openai import OpenAI
 from response_model import TopicSubtopic
-import httpx
 
 client = OpenAI()
 
@@ -48,25 +47,17 @@ def generate(content: str) -> list:
     
 
 def generate_summary(content):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": """You are an expert summarizer. Summarize the given content concisely and clearly. ONLY RESPOND WITH THE SUMMARIZED CONTENT."""},
-                {"role": "user", "content": content}
-            ],
-            max_tokens=250,
-            temperature=0.1
-        )
-        
-        return str(response.choices[0].message.content)
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": """You are an expert summarizer. Summarize the given content concisely and clearly. ONLY RESPOND WITH THE SUMMARIZED CONTENT."""},
+            {"role": "user", "content": content}
+        ],
+        max_tokens=250,
+        temperature=0.1
+    )
     
-    except OpenAIError as e:
-        return {"error": "OpenAI API error", "message": str(e)}
-    except httpx.HTTPStatusError as e:
-        return {"error": "HTTP error", "status_code": e.response.status_code, "message": str(e)}
-    except Exception as e:
-        return {"error": "Unexpected error", "message": str(e)}
+    return str(response.choices[0].message.content)
 
 def get_topic_subtopic(topic_subtopic_str: str):
     try:

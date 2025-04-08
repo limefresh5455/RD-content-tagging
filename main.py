@@ -1,13 +1,14 @@
 import os
+import time
 import uuid
 from typing import List
 from fastapi import Depends
 from typing import Annotated
 from tasks import process_files, process_urls
 from fastapi.security.api_key import APIKeyHeader
-from utils import process_url_with_retry, process_file_with_retry
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
+from utils import process_url_with_retry, process_file
 from response_model import QuickCallbackResponseModel, ResponseModel
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks
 
 app = FastAPI(title="FastAPI App Endpoints")
 
@@ -23,14 +24,12 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
 
 # ____________________________________________Extract endpoint with multithreading for urls ______________________________________________
 
-
 @app.post('/extract_urls', response_model= list[ResponseModel])
 async def extract_urls(urls: Annotated[str, Query()], api_key: str = Depends(verify_api_key)):
     urls_list = urls.split(',')
     
     results = [process_url_with_retry(url) for url in urls_list]    
     return results
-
 
 @app.post('/extract_urls_callback', response_model= QuickCallbackResponseModel , responses={
     200 : {
@@ -55,9 +54,12 @@ async def extract_urls(background_tasks : BackgroundTasks, urls: Annotated[str, 
 #__________________________________________endpoint_for_file________________________________________________________
 @app.post('/extract_file', response_model= list[ResponseModel])
 async def extract_file(files: List[UploadFile] = File(), api_key: str = Depends(verify_api_key)):    
-
-    results = [process_file_with_retry(file) for file in files]
-
+    
+    start_time = time.time()
+    results = [process_file(file) for file in files]
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
     return results
 
 @app.post('/extract_file_callback', response_model= QuickCallbackResponseModel , responses={
@@ -81,4 +83,4 @@ async def extract_file(background_tasks : BackgroundTasks, files: List[UploadFil
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, port=8000)

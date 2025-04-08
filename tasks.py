@@ -1,7 +1,7 @@
 import requests
+from utils import process_file, process_url
 from fastapi import UploadFile, HTTPException
 from response_model import CallbackResponseModel
-from utils import process_file, process_url
 
 def send_callback(data: CallbackResponseModel, callback_url: str):
     try:

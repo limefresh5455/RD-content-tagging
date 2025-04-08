@@ -1,12 +1,15 @@
+import json
+import time
 import PyPDF2
 import requests
+import traceback
 from io import BytesIO
-from openai import OpenAI, OpenAIError
+from openai import OpenAIError
 from fastapi import UploadFile,HTTPException
-from prompt import generate, generate_summary
 from response_model import ResponseModel, ContentModel
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from starlette.datastructures import UploadFile as StarletteUploadFile
+from prompt import generate, generate_summary, topic_subtopic_pairs_str
 
 #____________________________________Function to handle PDF file categories______________________________________________
 
@@ -33,19 +36,70 @@ def document_categorieser(pdf_file : UploadFile, from_url : str = None):
     except OpenAIError as e:        
         raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
     
-    except Exception as e:
-        import traceback
+    except Exception as e:        
         print(traceback.format_exc())
         if from_url:
             raise HTTPException(status_code=500, detail=f"Error processing file from URL: {str(e)}")
         # return ResponseModel(status= False, message=f" Error {e}", filename = pdf_file.filename)
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
-def process_file_source_url(source_url : str) -> UploadFile:
+from google import genai
+from pydantic import BaseModel
+
+client = genai.Client()
+
+class CategoryReport(BaseModel):
+    topic: str
+    subtopic: str
+    summary: str
+
+def file_processor_gemini(pdf_file : UploadFile, mime_type: str, from_url : str = None):
+    try:        
+        gemini_file = client.files.upload(file=pdf_file.file, config = {"mime_type": mime_type})
+        
+        if mime_type == "video/mp4":
+        # Check whether the file is ready to be used.
+            while gemini_file.state.name == "PROCESSING":
+                print('.', end='')
+                time.sleep(1)
+                gemini_file = client.files.get(name=gemini_file.name)
+
+            if gemini_file.state.name == "FAILED":
+                raise ValueError(gemini_file.state.name)
+
+        print('Done')
+        prompt = (
+            "You are a smart assistant working as an expert summarizer and a classifier to categorize content using the provided list of topics and subtopics. "
+            "Possible topics and subtopics:\n"
+            f"{topic_subtopic_pairs_str}\n"
+            "**Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above.\n"
+            "Summarize the content, try to use the complete file, do not include any other messages in response, only respond with summary."
+        )
+        response = client.models.generate_content(
+            model = 'gemini-1.5-flash',
+            contents = [gemini_file, prompt],
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': CategoryReport
+            }
+        )
+        # print(response.text)
+        response_json = json.loads(response.text)
+        client.files.delete(name=gemini_file.name)
+        if from_url:
+            return ResponseModel(status= True, message = "Documents processed successfully", url= from_url, content=ContentModel(**{"category_report": [{"topic" : response_json['topic'], "subtopic" : response_json['subtopic']}], "summary": response_json['summary']}))
+        return ResponseModel(status= True, message = "Documents processed successfully", filename=pdf_file.filename, content=ContentModel(**{"category_report": [{"topic" : response_json['topic'], "subtopic" : response_json['subtopic']}], "summary": response_json['summary']}))
+    except Exception as e:
+        print(traceback.format_exc())
+        if gemini_file:            
+            client.files.delete(name=gemini_file.name)
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+    
+def process_file_source_url(source_url : str, mime_type: str) -> UploadFile:
     """
     Downloads the pdf file using the public URL from azure storage, return the file content as UploadFile
     """
-    print("Downlaoding file")
+    print("Downloding file")
     try:
         response = requests.get(source_url)
         response.raise_for_status()
@@ -54,7 +108,9 @@ def process_file_source_url(source_url : str) -> UploadFile:
             pdf_file = BytesIO(response.content)
 
             upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
-            return document_categorieser(upload_file, from_url= source_url)
+            # return document_categorieser(upload_file, from_url= source_url)
+            return file_processor_gemini(upload_file, mime_type= mime_type, from_url= source_url)
     except Exception as e:
         # return ResponseModel(status= False, message=f" Error {e}", url = source_url)
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
