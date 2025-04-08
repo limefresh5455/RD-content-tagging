@@ -104,7 +104,7 @@ def process_file_source_url(source_url : str, mime_type: str) -> UploadFile:
         response = requests.get(source_url)
         response.raise_for_status()
         if response.status_code == 200:
-            print("File download successfully")
+            print("File downloaded successfully")
             pdf_file = BytesIO(response.content)
 
             upload_file = StarletteUploadFile(file = pdf_file, filename="download_file.pdf")
