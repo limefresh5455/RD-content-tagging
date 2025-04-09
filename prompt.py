@@ -10,6 +10,14 @@ topics_df = pd.read_csv("topics.csv")
 topic_subtopic_pairs = [f"Topic: {topic}, SubTopic: {subtopic}" for topic, subtopic in zip(topics_df['Topic'], topics_df['Subtopic'])]
 topic_subtopic_pairs_str = "\n".join(topic_subtopic_pairs)
 
+system_instructions = (
+            "You are a smart assistant working as an expert summarizer and a classifier to categorize content using the provided list of topics and subtopics. "
+            "Possible topics and subtopics:\n"
+            f"{topic_subtopic_pairs_str}\n"
+            "**Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above.\n"
+            "Summarize the content, try to use the complete file, do not include any other messages in response, only respond with summary."
+        )
+
 def generate(content: str) -> list:
     response = client.chat.completions.create(
         model="gpt-4o-mini",

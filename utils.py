@@ -3,10 +3,9 @@ import os
 import time
 import urllib.parse
 from urllib.parse import urlparse
+from url_processing import categories_url
 from fastapi import HTTPException, UploadFile
-from youtube_processing import process_youtube_links
-from url_processing import categories_url, process_video_source_url
-from file_processing import process_file_source_url, file_processor_gemini
+from file_processing import process_file_source_url, file_processor_gemini, process_youtube_url
 
 MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 
@@ -37,7 +36,7 @@ def process_url(url):
         elif (parsed_url.scheme in ['http', 'https'])and parsed_url.netloc != 'www.youtube.com' :
             return categories_url(url)
         elif (parsed_url.scheme in ['http', 'https']) and parsed_url.netloc == 'www.youtube.com':
-            return process_youtube_links(url)
+            return process_youtube_url(url)
         else:
             raise HTTPException(status_code=400, detail='Unsupported URL format')
     else:

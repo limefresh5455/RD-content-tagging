@@ -9,7 +9,7 @@ from fastapi import UploadFile,HTTPException
 from response_model import ResponseModel, ContentModel
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from starlette.datastructures import UploadFile as StarletteUploadFile
-from prompt import generate, generate_summary, topic_subtopic_pairs_str
+from prompt import generate, generate_summary, topic_subtopic_pairs_str, system_instructions
 
 #____________________________________Function to handle PDF file categories______________________________________________
 
@@ -68,16 +68,9 @@ def file_processor_gemini(pdf_file : UploadFile, mime_type: str, from_url : str 
                 raise ValueError(gemini_file.state.name)
 
         print('Done')
-        prompt = (
-            "You are a smart assistant working as an expert summarizer and a classifier to categorize content using the provided list of topics and subtopics. "
-            "Possible topics and subtopics:\n"
-            f"{topic_subtopic_pairs_str}\n"
-            "**Important**: If the content cannot be classified into the provided list, provide the closest topic and subtopic from the list above.\n"
-            "Summarize the content, try to use the complete file, do not include any other messages in response, only respond with summary."
-        )
         response = client.models.generate_content(
             model = 'gemini-1.5-flash',
-            contents = [gemini_file, prompt],
+            contents = [gemini_file, system_instructions],
             config={
                 'response_mime_type': 'application/json',
                 'response_schema': CategoryReport
@@ -114,3 +107,23 @@ def process_file_source_url(source_url : str, mime_type: str) -> UploadFile:
         # return ResponseModel(status= False, message=f" Error {e}", url = source_url)
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+from google.genai import types
+def process_youtube_url(url):
+    response = client.models.generate_content(
+    model='models/gemini-2.0-flash',
+    contents=types.Content(
+        parts=[
+            types.Part(text=system_instructions),
+            types.Part(
+                file_data=types.FileData(file_uri=url)
+            )
+        ]
+    ),
+    config={
+            'response_mime_type': 'application/json',
+            'response_schema': CategoryReport
+            }
+    )
+    response_json = json.loads(response.text)
+    return ResponseModel(status= True, message = "Documents processed successfully", url= url, content=ContentModel(**{"category_report": [{"topic" : response_json['topic'], "subtopic" : response_json['subtopic']}], "summary": response_json['summary']}))
